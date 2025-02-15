@@ -1,0 +1,262 @@
+
+<!DOCTYPE html><html><head><meta charset='utf-8'/>
+<title>めくりあわせ - 観光オープンデータを使ったアプリ(ODP)</title>
+<meta property="og:image" content="http://fukuno.jig.jp/2014/mekuriawaseodp.jpg">
+<link rel="apple-touch-icon" href="http://fukuno.jig.jp/2014/mekuriawaseodp.jpg"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi">
+<script src="https://fukuno.jig.jp/2014/fukuno.js/fukuno.js"></script>
+<script>"use strict";
+var currentpos = { lat: 35.9433, lng: 136.1885　}; // デフォルト 鯖江駅
+
+window.onload = function() {
+	var limit = 300;
+	var query = f2s(function() {/*
+		select ?uri ?img ?lat ?lng ?name {
+			?uri <http://schema.org/image> ?img;
+			<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/jrrk#CivicPOI>;
+			<http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat;
+			<http://www.w3.org/2003/01/geo/wgs84_pos#long> ?lng;
+			<http://www.w3.org/2000/01/rdf-schema#label> ?name
+		} limit
+	*/}) + limit;
+	var url = "?query=" + encodeURIComponent(query) + "&output=json";
+	var func = function(data) {
+		var items = data.results.bindings;
+		items = getValuesRDF(items);
+//		dump(items);
+		game(items);
+		get("retry").onclick = function() {
+			game(items);
+		};
+	};
+	url += "&callback=" + getCallbackMethod(func);
+	var baseurl = "https://sparql.odp.jig.jp/data/sparql";
+	jsonp(baseurl + url);
+
+};
+var getValuesRDF = function(data) {
+	var res = [];
+	for (var i = 0; i < data.length; i++) {
+		var d = data[i];
+		var d2 = {};
+		for (var name in d) {
+			d2[name] = d[name].value;
+		}
+		res.push(d2);
+	}
+	return res;
+};
+var getTimeFormated = function(dt) {
+	return Math.floor(dt / 1000 / 60) + ":" + fixnum(Math.floor(dt / 1000 % 60), 2);
+};
+var game = function(data) {
+	var tstart = new Date().getTime();
+	shuffle(data);
+	var cards = [];
+	var ncards = 12;
+	for (var i = 0; i < ncards / 2; i++) {
+		cards.push(data[i]);
+		cards.push(data[i]);
+	}
+	shuffle(cards);
+	var busy = false;
+	var bkcard = null;
+	var remain = ncards;
+	clear(get("main"));
+	for (var i = 0; i < cards.length; i++) {
+		var d = cards[i];
+		
+		var div = create('div');
+		div.className = 'item';
+		div.innerHTML = getContent(d);
+		div.data = d;
+		get('main').appendChild(div);
+		div.onclick = function() {
+			if (busy)
+				return;
+			if (this.childNodes[0].style.webkitTransform == "rotateY(180deg)")
+				return;
+			if (bkcard == null) {
+				this.childNodes[0].style.webkitTransform = "rotateY(180deg)";
+				bkcard = this;
+			} else {
+				if (this.data.uri == bkcard.data.uri) {
+					this.childNodes[0].style.webkitTransform = "rotateY(180deg)";
+					bkcard = null;
+					ncards -= 2;
+					if (ncards == 0) {
+						setTimeout(function() {
+							var tend = new Date().getTime();
+							var dt = tend - tstart;
+							dt += 1000 * 60 * 10;
+							alert("おめでとう！ クリアタイム " + getTimeFormated(dt));
+						}, 500);
+					}
+				} else {
+					var card1 = this;
+					var card2 = bkcard;
+					this.childNodes[0].style.webkitTransform = "rotateY(180deg)";
+					bkcard = null;
+					busy = true;
+					setTimeout(function() {
+						card1.childNodes[0].style.webkitTransform = "rotateY(0deg)";
+						card2.childNodes[0].style.webkitTransform = "rotateY(0deg)";
+						busy = false;
+					}, 500);
+				}
+			}
+		};
+	}
+};
+var getDirections = function(lat1, lng1, lat2, lng2) {
+	return "https://www.google.com/maps/dir/" + lat1 + "," + lng1 + "/" + lat2 + "," + lng2;
+};
+var getDirectionsFromHere = function(lat, lng) {
+	return "https://www.google.com/maps/dir/Current+Location/" + lat + "," + lng;
+};
+var gohere = function(lat, lng) {
+	/*
+	navigator.geolocation.getCurrentPosition(function(pos) {
+		currentpos.lat = pos.coords.latitude;
+		currentpos.lng = pos.coords.longitude;
+//		dump(currentpos);
+	});
+*/
+	const url = "https://code4fukui.github.io/kokoiku/#" + lat + "," + lng;
+	window.open(url, "_blank");
+};
+var getContent = function(data) {
+	var s = [];
+	s.push("<div class='card'>");
+	s.push("<div class='front'>");
+	s.push("<div class='title'>" + data.name + "</div>");
+	s.push("<div class='type'><div class='img' style='background-image:url(" + data.img + ")'></div><br>");
+	s.push("<a href=javascript:gohere(" + data.lat + "," + data.lng + ")>ココに行く</a>");
+	s.push("</div>");
+	s.push("</a>");
+	s.push("</div>");
+	s.push("<div class='back'>");
+	s.push("</div>");
+	s.push("</div></div>");
+	return s.join('');
+};
+</script>
+<style>
+body {
+	margin: 0px;
+	text-align: center;
+}
+#main {
+	margin-top: 10px;
+}
+.item {
+	display: inline-block;
+	background: white;
+	width: 150px;
+	height: 200px;
+	margin: 8px 8px;
+	-webkit-perspective: 1000;
+}
+.card {
+	position: absolute;
+	width: 150px;
+	height: 200px;
+	-webkit-transform-style: preserve-3d;
+	-webkit-transition: 0.3s;
+}
+.front {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	border: 2px solid #444;	
+	border-radius: 4px;
+	box-sizing: border-box;
+	width: 150px;
+	height: 200px;
+	background: #fff;
+	z-index: 10;
+	text-align: center;
+	background-color: white;
+	-webkit-transform: rotateY(180deg) rotateZ(0deg);
+	-webkit-backface-visibility: hidden;
+}
+.back {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	box-sizing: border-box;
+	border: 10px solid #444;	
+	border-radius: 4px;
+	width: 150px;
+	height: 200px;
+	font-size: 80%;
+	overflow-y: auto;
+	background: orange;
+	-webkit-transform: rotateY(0deg) rotateZ(0deg);
+	-webkit-backface-visibility: hidden;
+	text-align: left;
+}
+.item .title {
+	font-size: 18px;
+}
+.item .type {
+	text-align: center;
+	position: absolute;
+	top: 60px;
+	font-size: 70%;
+	width: 100%;
+}
+.item .img {
+	display: inline-block;
+	width: 134px;
+	height: 100px;
+	background-size: 120px auto;
+	background-repeat: no-repeat;
+	background-position: center;
+	over-flow-y: hidden;
+}
+@media screen and (max-width: 600px) {
+	/*
+	.item, .card, .front, .back {
+		width: 75px;
+		height: 100px;
+	}
+	.back {
+		border: 4px solid #444;
+	}
+	.item .img {
+		width: 70px;
+		height: 40px;
+		background-size: 70px auto;
+	}
+	.item {
+		margin: 5px;
+	}
+	*/
+	#main {
+		zoom: 50%;
+	}
+}
+
+a {
+	color: gray !important;
+}
+.src {
+	margin: 10px;
+	font-size: 80%;
+}
+</style>
+</head>
+<body>
+
+<div id='main'></div>
+<button id="retry">リトライ！</button><br>
+
+<div class="src">
+「めくりあわせ」<br>
+データ提供：<a href=http://odp.jig.jp/ target=_blank>オープンデータプラットフォーム</a><br>
+アプリ：<a href=https://creativecommons.org/licenses/by/2.1/jp/ target=_blank>CC BY</a> <a href=http://fukuno.jig.jp/757 target=_blank>福野泰介 一日一創</a><br>
+</div>
+
+</body>
+</html>
