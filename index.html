@@ -38,7 +38,7 @@ const getValuesRDF = function(data) {
 	for (let i = 0; i < data.length; i++) {
 		const d = data[i];
 		const d2 = {};
-		for (let name in d) {
+		for (const name in d) {
 			d2[name] = d[name].value;
 		}
 		res.push(d2);
