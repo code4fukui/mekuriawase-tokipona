@@ -1,16 +1,18 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
+<meta property="og:image" content="https://fukuno.jig.jp/2014/mekuriawaseodp.jpg">
+<link rel="apple-touch-icon" href="https://fukuno.jig.jp/2014/mekuriawaseodp.jpg">
+<title>めくりあわせ - 観光オープンデータを使ったアプリ(ODP)</title></head><body>
+<script type="module">
+import { shuffle } from "https://js.sabae.cc/shuffle.js";
 
-<!DOCTYPE html><html><head><meta charset='utf-8'/>
-<title>めくりあわせ - 観光オープンデータを使ったアプリ(ODP)</title>
-<meta property="og:image" content="http://fukuno.jig.jp/2014/mekuriawaseodp.jpg">
-<link rel="apple-touch-icon" href="http://fukuno.jig.jp/2014/mekuriawaseodp.jpg"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi">
-<script src="https://fukuno.jig.jp/2014/fukuno.js/fukuno.js"></script>
-<script>"use strict";
-var currentpos = { lat: 35.9433, lng: 136.1885　}; // デフォルト 鯖江駅
+const get = (id) => document.getElementById(id);
+const create = (tag) => document.createElement(tag);
 
-window.onload = function() {
-	var limit = 300;
-	var query = f2s(function() {/*
+const currentpos = { lat: 35.9433, lng: 136.1885　}; // デフォルト 鯖江駅
+
+window.onload = async () => {
+	const limit = 300;
+	const query = `
 		select ?uri ?img ?lat ?lng ?name {
 			?uri <http://schema.org/image> ?img;
 			<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/jrrk#CivicPOI>;
@@ -18,57 +20,59 @@ window.onload = function() {
 			<http://www.w3.org/2003/01/geo/wgs84_pos#long> ?lng;
 			<http://www.w3.org/2000/01/rdf-schema#label> ?name
 		} limit
-	*/}) + limit;
-	var url = "?query=" + encodeURIComponent(query) + "&output=json";
-	var func = function(data) {
-		var items = data.results.bindings;
-		items = getValuesRDF(items);
-//		dump(items);
-		game(items);
-		get("retry").onclick = function() {
-			game(items);
-		};
+	` + limit;
+	const url = "?query=" + encodeURIComponent(query) + "&output=json";
+	const func = function(data) {
 	};
-	url += "&callback=" + getCallbackMethod(func);
-	var baseurl = "https://sparql.odp.jig.jp/data/sparql";
-	jsonp(baseurl + url);
+	const baseurl = "https://sparql.odp.jig.jp/data/sparql";
+	const data = await (await fetch(baseurl + url)).json();
+	console.log(data);
+	//url += "&callback=" + getCallbackMethod(func);
+	//jsonp(baseurl + url);
+	const items0 = data.results.bindings;
+	console.log(items0);
+	const items = getValuesRDF(items0);
+//		dump(items);
+	game(items);
+	get("retry").onclick = function() {
+		game(items);
+	};
 
 };
-var getValuesRDF = function(data) {
-	var res = [];
-	for (var i = 0; i < data.length; i++) {
-		var d = data[i];
-		var d2 = {};
-		for (var name in d) {
+const getValuesRDF = function(data) {
+	const res = [];
+	for (let i = 0; i < data.length; i++) {
+		const d = data[i];
+		const d2 = {};
+		for (let name in d) {
 			d2[name] = d[name].value;
 		}
 		res.push(d2);
 	}
 	return res;
 };
-var getTimeFormated = function(dt) {
-	return Math.floor(dt / 1000 / 60) + ":" + fixnum(Math.floor(dt / 1000 % 60), 2);
+const getTimeFormated = function(dt) {
+	return Math.floor(dt / 1000 / 60) + ":" + (Math.floor(dt / 1000 % 60).toFixed(2));
 };
-var game = function(data) {
-	var tstart = new Date().getTime();
+const game = function(data) {
+	const tstart = new Date().getTime();
 	shuffle(data);
-	var cards = [];
-	var ncards = 12;
-	for (var i = 0; i < ncards / 2; i++) {
+	const cards = [];
+	let ncards = 12;
+	for (let i = 0; i < ncards / 2; i++) {
 		cards.push(data[i]);
 		cards.push(data[i]);
 	}
 	shuffle(cards);
-	var busy = false;
-	var bkcard = null;
-	var remain = ncards;
-	clear(get("main"));
-	for (var i = 0; i < cards.length; i++) {
-		var d = cards[i];
+	let busy = false;
+	let bkcard = null;
+	let remain = ncards;
+	main.innerHTML = "";
+	for (let i = 0; i < cards.length; i++) {
+		const d = cards[i];
 		
-		var div = create('div');
+		const div = getContent(d);
 		div.className = 'item';
-		div.innerHTML = getContent(d);
 		div.data = d;
 		get('main').appendChild(div);
 		div.onclick = function() {
@@ -86,15 +90,15 @@ var game = function(data) {
 					ncards -= 2;
 					if (ncards == 0) {
 						setTimeout(function() {
-							var tend = new Date().getTime();
-							var dt = tend - tstart;
+							const tend = new Date().getTime();
+							let dt = tend - tstart;
 							dt += 1000 * 60 * 10;
 							alert("おめでとう！ クリアタイム " + getTimeFormated(dt));
 						}, 500);
 					}
 				} else {
-					var card1 = this;
-					var card2 = bkcard;
+					const card1 = this;
+					const card2 = bkcard;
 					this.childNodes[0].style.webkitTransform = "rotateY(180deg)";
 					bkcard = null;
 					busy = true;
@@ -108,13 +112,13 @@ var game = function(data) {
 		};
 	}
 };
-var getDirections = function(lat1, lng1, lat2, lng2) {
+const getDirections = function(lat1, lng1, lat2, lng2) {
 	return "https://www.google.com/maps/dir/" + lat1 + "," + lng1 + "/" + lat2 + "," + lng2;
 };
-var getDirectionsFromHere = function(lat, lng) {
+const getDirectionsFromHere = function(lat, lng) {
 	return "https://www.google.com/maps/dir/Current+Location/" + lat + "," + lng;
 };
-var gohere = function(lat, lng) {
+const gohere = function(lat, lng) {
 	/*
 	navigator.geolocation.getCurrentPosition(function(pos) {
 		currentpos.lat = pos.coords.latitude;
@@ -125,20 +129,23 @@ var gohere = function(lat, lng) {
 	const url = "https://code4fukui.github.io/kokoiku/#" + lat + "," + lng;
 	window.open(url, "_blank");
 };
-var getContent = function(data) {
-	var s = [];
+const getContent = function(data) {
+	const s = [];
 	s.push("<div class='card'>");
 	s.push("<div class='front'>");
 	s.push("<div class='title'>" + data.name + "</div>");
 	s.push("<div class='type'><div class='img' style='background-image:url(" + data.img + ")'></div><br>");
-	s.push("<a href=javascript:gohere(" + data.lat + "," + data.lng + ")>ココに行く</a>");
+	s.push("<button>ココに行く</button>");
 	s.push("</div>");
 	s.push("</a>");
 	s.push("</div>");
 	s.push("<div class='back'>");
 	s.push("</div>");
 	s.push("</div></div>");
-	return s.join('');
+	const div = create("div");
+	div.innerHTML = s.join("");
+	div.querySelector("button").onclick = () => gohere(data.lat, data.lng);
+	return div;
 };
 </script>
 <style>
@@ -254,7 +261,7 @@ a {
 
 <div class="src">
 「めくりあわせ」<br>
-データ提供：<a href=http://odp.jig.jp/ target=_blank>オープンデータプラットフォーム</a><br>
+データ提供：<a href=https://odp.jig.jp/ target=_blank>オープンデータプラットフォーム</a><br>
 アプリ：<a href=https://creativecommons.org/licenses/by/2.1/jp/ target=_blank>CC BY</a> <a href=http://fukuno.jig.jp/757 target=_blank>福野泰介 一日一創</a><br>
 </div>
 
