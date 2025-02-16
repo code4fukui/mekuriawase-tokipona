@@ -18,21 +18,16 @@ window.onload = async () => {
 			<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/jrrk#CivicPOI>;
 			<http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat;
 			<http://www.w3.org/2003/01/geo/wgs84_pos#long> ?lng;
-			<http://www.w3.org/2000/01/rdf-schema#label> ?name
+			<http://www.w3.org/2000/01/rdf-schema#label> ?name.
+			filter (lang(?name) = "ja")
 		} limit
 	` + limit;
 	const url = "?query=" + encodeURIComponent(query) + "&output=json";
-	const func = function(data) {
-	};
 	const baseurl = "https://sparql.odp.jig.jp/data/sparql";
 	const data = await (await fetch(baseurl + url)).json();
-	console.log(data);
-	//url += "&callback=" + getCallbackMethod(func);
-	//jsonp(baseurl + url);
 	const items0 = data.results.bindings;
 	console.log(items0);
 	const items = getValuesRDF(items0);
-//		dump(items);
 	game(items);
 	get("retry").onclick = function() {
 		game(items);
