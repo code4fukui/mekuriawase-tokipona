@@ -19,9 +19,8 @@ window.onload = async () => {
 			<http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat;
 			<http://www.w3.org/2003/01/geo/wgs84_pos#long> ?lng;
 			<http://www.w3.org/2000/01/rdf-schema#label> ?name.
-			filter (lang(?name) = "ja")
-		} limit
-	` + limit;
+			filter(lang(?name) = "ja")
+		} limit ${limit}`;
 	const url = "?query=" + encodeURIComponent(query) + "&output=json";
 	const baseurl = "https://sparql.odp.jig.jp/data/sparql";
 	const data = await (await fetch(baseurl + url)).json();
