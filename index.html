@@ -75,18 +75,24 @@ const getContent = (data) => {
   if (data.type == 1) {
     div.innerHTML = `<div class="card">
       <div class="front">
-        <div class="title"><br>${i.代}代将軍<br>徳川${i.下の名前}<br>${i.ふりがな}</div>
-        <button>Wikipedia</button>
+        <div class="title">徳川${i.下の名前}<br>${i.ふりがな}</div>
+        <!--<button>Wikipedia</button>-->
+        <div class="type">
+          <div class="img" style="background-image:url(${i.肖像リンク})"></div>
+        </div>
       </div>
       <div class="back"></div>
     </div>
     `;
-    div.querySelector("button").onclick = () => {
+    /*
+		div.querySelector("button").onclick = () => {
       open(i.Wikipediaリンク, "_blank");
     };
+		*/
   } else {
     div.innerHTML = `<div class="card">
       <div class="front">
+        <div class="title"><br>${i.代}代将軍</div>
         <div class="type">
           <div class="img" style="background-image:url(${i.肖像リンク})"></div>
         </div>
@@ -211,7 +217,7 @@ a {
 <button id="retry">リトライ！</button><br>
 
 <div class="src">
-App：forked めくりあわせ <a href=https://creativecommons.org/licenses/by/2.1/jp/ target=_blank>CC BY</a> <a href=http://fukuno.jig.jp/757 target=_blank>福野泰介 一日一創</a><br>
+<a href=https://github.com/code4fukui/mekuriawase-tkgw15/>src on GitHub</a> forked めくりあわせ <a href=https://creativecommons.org/licenses/by/2.1/jp/ target=_blank>CC BY</a> <a href=http://fukuno.jig.jp/757 target=_blank>福野泰介 一日一創</a><br>
 DATA: <a href=https://code4fukui.github.io/tokugawa15/>徳川15代オープンデータ</a><br>
 
 </div>
