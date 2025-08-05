@@ -1,8 +1,8 @@
-# mekuriawase-tkgw15 徳川15代めくりあわせ
+# 福井観光スポットめくりあわせ
 
-https://code4fukui.github.io/mekuriawase-tkgw15/
+https://code4fukui.github.io/mekuriawase-fukui/
 
 ## reference
 
-- DATA: [徳川15代オープンデータ](https://code4fukui.github.io/tokugawa15/)
-- forked from [めくりあわせ - 観光オープンデータを使ったアプリ(ODP)](https://fukuno.jig.jp/2014/mekuriawaseodp)
+- DATA: [福井観光スポットオープンデータ](https://github.com/code4fukui/fukui-spot) [CSV](https://code4fukui.github.io/fukui-spot/fuku-e-spot.csv)
+- forked from [徳川15代めくりあわせ](https://github.com/code4fukui/mekuriawase-tkgw15/)
