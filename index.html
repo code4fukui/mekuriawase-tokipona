@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
-<title>福井めくりあわせ</title></head><body>
-<h1>福井めくりあわせ</h1>
+<title>トキポナめくりあわせ</title></head><body>
+<h1>トキポナめくりあわせ</h1>
 <script type="module">
 import { shuffle } from "https://js.sabae.cc/shuffle.js";
 import { CSV } from "https://js.sabae.cc/CSV.js";
@@ -10,7 +10,7 @@ const getTimeFormated = (dt) => {
 };
 
 window.onload = async () => {
-  const url = "https://code4fukui.github.io/fukui-spot/fuku-e-spot.csv";
+  const url = "https://code4fukui.github.io/tok2jpn/tok2jpn.csv";
   const data = await CSV.fetchJSON(url);
   console.log(data)
   game(data);
@@ -77,12 +77,8 @@ const getContent = (data) => {
   if (data.type == 1) {
     div.innerHTML = `<div class="card">
       <div class="front">
-        <div class="title">${i.name}</div>
-        <!--<br>${i.area || i.kana}</div>-->
-        <!--<button>Wikipedia</button>-->
-        <div class="type">
-          <div class="img" style="background-image:url(${i.image})"></div>
-        </div>
+        <div class="title">${i.tok}</div>
+        <div class="type">${i.tok}</div>
       </div>
       <div class="back"></div>
     </div>
@@ -95,10 +91,8 @@ const getContent = (data) => {
   } else {
     div.innerHTML = `<div class="card">
       <div class="front">
-        <div class="title"><br>${i.area}</div>
-        <div class="type">
-          <div class="img" style="background-image:url(${i.image})"></div>
-        </div>
+        <div class="title"><br>${i.jpn}</div>
+        <div class="type">${i.tok}</div>
       </div>
       <div class="back"></div>
     </div>
@@ -167,11 +161,19 @@ body {
   font-size: 16px;
   padding: 2px;
 }
+@font-face {
+  /* from https://linjasuwi.ap5.dev/ */
+  font-family: 'linja suwi';
+  src: url('https://code4fukui.github.io/tok2jpn/linjasuwi.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
 .item .type {
+  font-family: 'linja suwi';
   text-align: center;
   position: absolute;
   bottom: 10px;
-  font-size: 70%;
+  font-size: 150px;
   width: 100%;
 }
 .item .img {
