@@ -1,8 +1,17 @@
-# トキポナめくりあわせ
+# Toki Pona Memory Matching
 
+A memory matching game with Toki Pona words.
+
+## Demo
 https://code4fukui.github.io/mekuriawase-tokipona/
 
-## reference
+## Features
+- Match Toki Pona words with their Japanese translations
+- Randomized card layout
+- Retry button to play again
 
-- DATA: [tok2jpn](https://github.com/code4fukui/tok2jpn)
-- forked from [徳川15代めくりあわせ](https://github.com/code4fukui/mekuriawase-tkgw15/)
+## Data
+The game uses the [tok2jpn](https://github.com/code4fukui/tok2jpn) Toki Pona to Japanese dictionary data.
+
+## License
+MIT
