@@ -1,5 +1,7 @@
 # Toki Pona Memory Matching
 
+> 日本語のREADMEはこちらです: [README.ja.md](README.ja.md)
+
 A memory matching game with Toki Pona words.
 
 ## Demo
