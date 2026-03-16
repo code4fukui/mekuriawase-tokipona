@@ -16,4 +16,4 @@ https://code4fukui.github.io/mekuriawase-tokipona/
 The game uses the [tok2jpn](https://github.com/code4fukui/tok2jpn) Toki Pona to Japanese dictionary data.
 
 ## License
-MIT
+MIT License — see [LICENSE](LICENSE).
