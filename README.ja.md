@@ -4,7 +4,7 @@
 
 ## デモ
 
-**ゲームはこちらで遊べます: https://code4fukui.github.io/mekuriawase-tokipona/**
+**ゲームはこちらで遊べます: https://github.com/code4fukui/mekuriawase-tokipona
 
 ## 特徴
 

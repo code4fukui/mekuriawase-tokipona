@@ -6,7 +6,7 @@ A simple memory matching game to help you learn Toki Pona words and their Japane
 
 ## Demo
 
-**Play the game here: https://code4fukui.github.io/mekuriawase-tokipona/**
+**Play the game here: https://github.com/code4fukui/mekuriawase-tokipona
 
 ## Features
 
